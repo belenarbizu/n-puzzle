@@ -10,7 +10,7 @@ class Problem
     private:
         State goal;
     public:
-        Problem(State goal);
+        Problem();
         ~Problem();
 
         vector<int> &actions();
@@ -18,10 +18,3 @@ class Problem
         bool goal_test(State state);
         float path_cost(State init_state, int action, State final_state);
 };
-
-class NPuzzleProblem : Problem<MiEstado>
-{
- ...
-};
-
-Problem<MiEstado> p = new NPuzzleProblem;
