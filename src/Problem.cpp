@@ -1,4 +1,4 @@
-#include "Problem.hpp"
+#include "../include/Problem.hpp"
 
 Problem::Problem(State goal) {}
 
