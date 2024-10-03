@@ -13,8 +13,8 @@ class Problem
         Problem();
         ~Problem();
 
-        vector<int> &actions();
-        State &result(State state, int action);
-        bool goal_test(State state);
-        float path_cost(State init_state, int action, State final_state);
+        virtual vector<int> actions(State state);
+        virtual State result(State state, int action);
+        virtual bool goal_test(State state);
+        virtual float path_cost(State init_state, int action, State final_state);
 };

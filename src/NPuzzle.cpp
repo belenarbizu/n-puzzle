@@ -26,6 +26,19 @@ NPuzzleState::NPuzzleState(NPuzzleState &s)
     this->p_y = s.p_y;
 }
 
+bool NPuzzleState::operator==(const NPuzzleState& puzzle)
+{
+    for (int row = 0; row < this->n; row++)
+    {
+        for (int col = 0; col < this->n; col++)
+        {
+            if (!(this->map[this->_index_of(col, row)] == puzzle.map[this->_index_of(col, row)]))
+                return false;
+        } 
+    } 
+    return true;
+}
+
 void NPuzzleState::_swap(int a, int b)
 {
     int tmp = this->map[a];
@@ -80,4 +93,101 @@ void NPuzzleState::move_right()
         this->_index_of(this->p_x + 1, this->p_y)
         );
     this->p_x += 1;
+}
+
+bool NPuzzleState::can_move_up()
+{
+    if (this->p_y == 0)
+        return false;
+    return true;
+}
+
+bool NPuzzleState::can_move_down()
+{
+    if (this->p_y == this->n - 1)
+        return false;
+    return true;
+}
+
+bool NPuzzleState::can_move_left()
+{
+    if (this->p_x == 0)
+        return false;
+    return true;
+}
+
+bool NPuzzleState::can_move_right()
+{
+    if (this->p_x == this->n - 1)
+        return false;
+    return true;
+}
+
+void NPuzzleState::print_map()
+{
+    for (int row = 0; row < this->n; row++)
+    {
+        for (int col = 0; col < this->n; col++)
+        {
+            int cell = this->map[this->_index_of(col, row)];
+            std::cout << cell << " ";
+        }
+        std::cout << std::endl;
+    } 
+}
+
+NPuzzleProblem::NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state)
+{
+    this->init = init_state;
+    this->goal = final_state;
+}
+
+vector<int> NPuzzleProblem::actions(NPuzzleState state)
+{
+    std::vector<int> actions;
+
+    if (state.can_move_down())
+        actions.push_back(DOWN);
+
+    if (state.can_move_up())
+        actions.push_back(UP);
+
+    if (state.can_move_left())
+        actions.push_back(LEFT);
+
+    if (state.can_move_right())
+        actions.push_back(RIGHT);
+
+    return actions;
+}
+
+NPuzzleState NPuzzleProblem::result(NPuzzleState state, int action)
+{
+    NPuzzleState new_state(state);
+
+    if (action == UP)
+        new_state.move_up();
+
+    if (action == DOWN)
+        new_state.move_down();
+
+    if (action == LEFT)
+        new_state.move_left();
+
+    if (action == RIGHT)
+        new_state.move_right();
+
+    return new_state;
+}
+
+bool NPuzzleProblem::goal_test(NPuzzleState state)
+{
+    if (this->goal == state)
+        return true;
+    return false;
+}
+
+float path_cost(NPuzzleState init_state, int action, NPuzzleState final_state)
+{
+    return 1;
 }
