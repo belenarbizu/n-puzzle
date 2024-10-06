@@ -16,6 +16,7 @@ class NPuzzleState
         int p_x, p_y;
 
     public:
+        NPuzzleState();
         NPuzzleState(int n, int *map);
         NPuzzleState(NPuzzleState &s);
         bool operator==(const NPuzzleState& puzzle);
@@ -43,6 +44,7 @@ class NPuzzleProblem: public Problem<NPuzzleState>
         NPuzzleState goal;
     public:
         NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state);
+        ~NPuzzleProblem();
 
         vector<int> actions(NPuzzleState state);
         NPuzzleState result(NPuzzleState state, int action);

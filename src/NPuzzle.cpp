@@ -26,6 +26,14 @@ NPuzzleState::NPuzzleState(NPuzzleState &s)
     this->p_y = s.p_y;
 }
 
+NPuzzleState::NPuzzleState()
+{
+    n = 0;
+    map = nullptr;
+    p_x = 0;
+    p_y = 0;
+}
+
 bool NPuzzleState::operator==(const NPuzzleState& puzzle)
 {
     for (int row = 0; row < this->n; row++)
@@ -142,6 +150,8 @@ NPuzzleProblem::NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state
     this->goal = final_state;
 }
 
+NPuzzleProblem::~NPuzzleProblem() {}
+
 vector<int> NPuzzleProblem::actions(NPuzzleState state)
 {
     std::vector<int> actions;
@@ -187,7 +197,7 @@ bool NPuzzleProblem::goal_test(NPuzzleState state)
     return false;
 }
 
-float path_cost(NPuzzleState init_state, int action, NPuzzleState final_state)
+float NPuzzleProblem::path_cost(NPuzzleState init_state, int action, NPuzzleState final_state)
 {
     return 1;
 }
