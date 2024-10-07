@@ -40,14 +40,15 @@ class NPuzzleState
 class NPuzzleProblem: public Problem<NPuzzleState>
 {
     private:
-        NPuzzleState init;
-        NPuzzleState goal;
+        NPuzzleState *init;
+        NPuzzleState *goal;
     public:
-        NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state);
+        NPuzzleProblem(NPuzzleState *init_state, NPuzzleState *final_state);
         ~NPuzzleProblem();
 
-        vector<int> actions(NPuzzleState state);
-        NPuzzleState result(NPuzzleState state, int action);
-        bool goal_test(NPuzzleState state);
-        float path_cost(NPuzzleState init_state, int action, NPuzzleState final_state);
+        vector<int> actions(NPuzzleState *state);
+        NPuzzleState *result(NPuzzleState *state, int action);
+        NPuzzleState *init_state();
+        bool goal_test(NPuzzleState *state);
+        float path_cost(NPuzzleState *init_state, int action, NPuzzleState *final_state);
 };

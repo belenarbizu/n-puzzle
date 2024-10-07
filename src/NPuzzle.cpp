@@ -144,7 +144,7 @@ void NPuzzleState::print_map()
     } 
 }
 
-NPuzzleProblem::NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state)
+NPuzzleProblem::NPuzzleProblem(NPuzzleState *init_state, NPuzzleState *final_state)
 {
     this->init = init_state;
     this->goal = final_state;
@@ -152,52 +152,57 @@ NPuzzleProblem::NPuzzleProblem(NPuzzleState init_state, NPuzzleState final_state
 
 NPuzzleProblem::~NPuzzleProblem() {}
 
-vector<int> NPuzzleProblem::actions(NPuzzleState state)
+vector<int> NPuzzleProblem::actions(NPuzzleState *state)
 {
     std::vector<int> actions;
 
-    if (state.can_move_down())
+    if (state->can_move_down())
         actions.push_back(DOWN);
 
-    if (state.can_move_up())
+    if (state->can_move_up())
         actions.push_back(UP);
 
-    if (state.can_move_left())
+    if (state->can_move_left())
         actions.push_back(LEFT);
 
-    if (state.can_move_right())
+    if (state->can_move_right())
         actions.push_back(RIGHT);
 
     return actions;
 }
 
-NPuzzleState NPuzzleProblem::result(NPuzzleState state, int action)
+NPuzzleState *NPuzzleProblem::result(NPuzzleState *state, int action)
 {
-    NPuzzleState new_state(state);
+    NPuzzleState *new_state = new NPuzzleState(*state);
 
     if (action == UP)
-        new_state.move_up();
+        new_state->move_up();
 
     if (action == DOWN)
-        new_state.move_down();
+        new_state->move_down();
 
     if (action == LEFT)
-        new_state.move_left();
+        new_state->move_left();
 
     if (action == RIGHT)
-        new_state.move_right();
+        new_state->move_right();
 
     return new_state;
 }
 
-bool NPuzzleProblem::goal_test(NPuzzleState state)
+NPuzzleState *NPuzzleProblem::init_state()
 {
-    if (this->goal == state)
+    return this->init;
+}
+
+bool NPuzzleProblem::goal_test(NPuzzleState *state)
+{
+    if (&this->goal == &state)
         return true;
     return false;
 }
 
-float NPuzzleProblem::path_cost(NPuzzleState init_state, int action, NPuzzleState final_state)
+float NPuzzleProblem::path_cost(NPuzzleState *init_state, int action, NPuzzleState *final_state)
 {
     return 1;
 }

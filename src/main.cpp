@@ -1,4 +1,5 @@
 #include "../include/NPuzzle.hpp"
+#include "../include/Node.hpp"
 using namespace std;
 
 int main_1()
@@ -18,14 +19,18 @@ int main_1()
 
 int main()
 {
-    int map[9] = {1, 2, 3, 8, 0, 4, 7, 6, 5};
-    NPuzzleState puzzle(3, map);
+    int map[9] = {1, 2, 3, 8, 4, 0, 7, 6, 5};
+    NPuzzleState *puzzle = new NPuzzleState(3, map);
     NPuzzleProblem problem(puzzle, puzzle);
-    vector<int> actions = problem.actions(puzzle);
+    //vector<int> actions = problem.actions(puzzle);
+    //puzzle->print_map();
+    Node<NPuzzleState> *root = new Node<NPuzzleState>(puzzle, NULL, 0, 0);
+    vector<Node<NPuzzleState> > children = root->expand(&problem);
     int i = 0;
-    while (i < actions.size())
+    while (i < children.size())
     {
-        std::cout << actions[i];
+        std::cout << endl;
+        children[i].get_state()->print_map();
         i++;
     }
 }
