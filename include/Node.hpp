@@ -77,7 +77,7 @@ vector<Node<State> *> Node<State>::expand(Problem<State> *problem)
             new_state,
             this,
             actions[i],
-            problem->path_cost(this->state, actions[i], new_state)
+            this->cost + problem->path_cost(this->state, actions[i], new_state)
         );
         result.push_back(new_node);
         i++;
