@@ -1,5 +1,6 @@
-#include "../include/NPuzzle.hpp"
-#include "../include/Node.hpp"
+#include "NPuzzle.hpp"
+#include "Node.hpp"
+#include "Problem.hpp"
 using namespace std;
 
 int main_1()
@@ -17,20 +18,55 @@ int main_1()
     return 0;
 }
 
-int main()
+template <typename State>
+void this_is_a_fake_search_algorithm(Problem<State> *problem)
 {
-    int map[9] = {1, 2, 3, 8, 4, 0, 7, 6, 5};
-    NPuzzleState *puzzle = new NPuzzleState(3, map);
-    NPuzzleProblem problem(puzzle, puzzle);
-    //vector<int> actions = problem.actions(puzzle);
-    //puzzle->print_map();
-    Node<NPuzzleState> *root = new Node<NPuzzleState>(puzzle, NULL, 0, 0);
-    vector<Node<NPuzzleState> > children = root->expand(&problem);
+    // The algorithm only depends on the abstraction of the problem and the
+    // state, therefore it can be used with any implementation of the problem.
+
+    // Create the root node
+    Node<State> *root = new Node<State>(problem->init_state(),
+        NULL, 0, 0);
+
+    // Expand the root node
+    vector<Node<State> *> children = root->expand(problem);
+
+    // Iterate children
     int i = 0;
     while (i < children.size())
     {
-        std::cout << endl;
-        children[i].get_state()->print_map();
+        std::cout << endl << "Action: " << children[i]->get_action()
+            << ", Cost: " << children[i]->get_cost() << endl;
+
+        // The print_map method is specific to the NPuzzleState, we don't care
+        // because this is a fake algorithm just to ilustrate the abstraction.
+        // In the real implementation of the algorithm we will only rely on
+        // the methods exposed by the Problem interface.
+        children[i]->get_state()->print_map();
         i++;
     }
+
+    // Kill the father
+    delete root;
+
+    // Also kill the rest of the family
+    i = 0;
+    while (i < children.size())
+    {
+        delete children[i];
+        i++;
+    }
+}
+
+int main()
+{
+    // Create the starting state
+    int map[9] = {1, 2, 3, 8, 0, 4, 7, 6, 5};
+    NPuzzleState puzzle(3, map);
+
+    // Create the problem.
+    NPuzzleProblem problem(&puzzle, &puzzle);
+
+    // Run the algorithm (It may return something)
+    this_is_a_fake_search_algorithm(&problem);
 }

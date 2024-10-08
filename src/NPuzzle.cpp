@@ -1,4 +1,4 @@
-#include "../include/NPuzzle.hpp"
+#include "NPuzzle.hpp"
 
 NPuzzleState::NPuzzleState(int n, int *map)
 {
@@ -34,13 +34,19 @@ NPuzzleState::NPuzzleState()
     p_y = 0;
 }
 
+NPuzzleState::~NPuzzleState()
+{
+    delete[] map;
+}
+
 bool NPuzzleState::operator==(const NPuzzleState& puzzle)
 {
     for (int row = 0; row < this->n; row++)
     {
         for (int col = 0; col < this->n; col++)
         {
-            if (!(this->map[this->_index_of(col, row)] == puzzle.map[this->_index_of(col, row)]))
+            if (!(this->map[this->_index_of(col, row)]
+                == puzzle.map[this->_index_of(col, row)]))
                 return false;
         } 
     } 
@@ -144,7 +150,8 @@ void NPuzzleState::print_map()
     } 
 }
 
-NPuzzleProblem::NPuzzleProblem(NPuzzleState *init_state, NPuzzleState *final_state)
+NPuzzleProblem::NPuzzleProblem(NPuzzleState *init_state,
+    NPuzzleState *final_state)
 {
     this->init = init_state;
     this->goal = final_state;
@@ -192,17 +199,18 @@ NPuzzleState *NPuzzleProblem::result(NPuzzleState *state, int action)
 
 NPuzzleState *NPuzzleProblem::init_state()
 {
-    return this->init;
+    return new NPuzzleState(*this->init);
 }
 
 bool NPuzzleProblem::goal_test(NPuzzleState *state)
 {
-    if (&this->goal == &state)
+    if (*this->goal == *state)
         return true;
     return false;
 }
 
-float NPuzzleProblem::path_cost(NPuzzleState *init_state, int action, NPuzzleState *final_state)
+float NPuzzleProblem::path_cost(NPuzzleState *init_state, int action,
+    NPuzzleState *final_state)
 {
     return 1;
 }

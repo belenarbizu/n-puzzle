@@ -11,11 +11,12 @@ class Problem
         Problem();
         ~Problem();
 
-        virtual vector<int> actions(State *state);
-        virtual State *result(State *state, int action);
-        virtual State *init_state();
-        virtual bool goal_test(State *state);
-        virtual float path_cost(State *init_state, int action, State *final_state);
+        virtual vector<int> actions(State *state) = 0;
+        virtual State *result(State *state, int action) = 0;
+        virtual State *init_state() = 0;
+        virtual bool goal_test(State *state) = 0;
+        virtual float path_cost(State *init_state, int action,
+            State *final_state) = 0;
 };
 
 template <typename State>
@@ -24,6 +25,7 @@ Problem<State>::Problem() {}
 template <typename State>
 Problem<State>::~Problem() {}
 
+/*
 template <typename State>
 vector<int> Problem<State>::actions(State *state)
 {
@@ -52,4 +54,4 @@ template <typename State>
 float Problem<State>::path_cost(State *init_state, int action, State *final_state)
 {
     return 0.0f;
-}
+}*/

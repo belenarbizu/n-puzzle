@@ -19,6 +19,7 @@ class NPuzzleState
         NPuzzleState();
         NPuzzleState(int n, int *map);
         NPuzzleState(NPuzzleState &s);
+        ~NPuzzleState();
         bool operator==(const NPuzzleState& puzzle);
 
         void _swap(int a, int b);
@@ -50,5 +51,6 @@ class NPuzzleProblem: public Problem<NPuzzleState>
         NPuzzleState *result(NPuzzleState *state, int action);
         NPuzzleState *init_state();
         bool goal_test(NPuzzleState *state);
-        float path_cost(NPuzzleState *init_state, int action, NPuzzleState *final_state);
+        float path_cost(NPuzzleState *init_state, int action,
+            NPuzzleState *final_state);
 };
