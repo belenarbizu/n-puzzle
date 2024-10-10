@@ -84,3 +84,14 @@ vector<Node<State> *> Node<State>::expand(Problem<State> *problem)
     }
     return result;
 }
+
+template <typename State>
+class CompareNodes
+{
+    public:
+        bool operator() (Node<State> *a, Node<State> *b)
+        {
+            //Hay que sumar a->h y b->h
+            return a->get_cost() > b->get_cost();
+        }
+};
