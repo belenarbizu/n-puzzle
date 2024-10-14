@@ -15,6 +15,7 @@ class Node
         float cost;
     public:
         Node(State *state, Node<State> *parent, int action, float cost);
+        Node(Node<State> &node);
         ~Node();
 
         State *get_state();
@@ -31,6 +32,18 @@ Node<State>::Node(State *state, Node<State> *parent, int action, float cost)
     this->parent = parent;
     this->action = action;
     this->cost = cost;
+}
+
+template <typename State>
+Node<State>::Node(Node<State> &node)
+{
+    this->state = new State(*node.get_state());
+    if (node.parent)
+        this->parent = new Node<State>(*node.get_parent());
+    else
+        this->parent = NULL;
+    this->action = node.action;
+    this->cost = node.cost;
 }
 
 template <typename State>

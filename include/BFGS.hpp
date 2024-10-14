@@ -3,16 +3,14 @@
 #include "Node.hpp"
 #include <queue>
 
-template <typename State>
-bool check_close(vector<Node<State> *> *close, Node<State> *current)
+typedef struct s_stats
 {
-    (void)close;
-    (void)current;
-    return true;
-}
+    int nodes_selected;
+    int nodes_represented;
+} t_stats;
 
 template <typename State>
-Node<State> *best_first_graph_search(Problem<State> *problem)
+Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats)
 {
     std::priority_queue<Node<State> *, std::vector<Node<State> *>, CompareNodes<State> > frontier;
     vector<Node<State> *> close;
@@ -21,32 +19,36 @@ Node<State> *best_first_graph_search(Problem<State> *problem)
     frontier.push(init);
     while (frontier.size())
     {
-        //Sacamos el nodo que tenga menor coste
         Node<State> *current = frontier.top();
+        stats->nodes_selected += 1;
         frontier.pop();
+        close.push_back(current);
 
-        // Imprimir el estado por depurar
-        std::cout << endl << "Action: " << current->get_action()
-            << ", Cost: " << current->get_cost() << endl;
-        current->get_state()->print_map();
-
-        //Se comprueba si es el goal test
         if (problem->goal_test(current->get_state()))
         {
-            //Copiar la lista para eliminar todo el arbol
-            return current;
-        }
-        if (check_close(&close, current))
-        {
-            vector<Node<State> *> children = current->expand(problem);
-            long unsigned int i = 0;
-            while (i < children.size())
+            stats->nodes_represented = frontier.size() + close.size();
+            Node<State> *path = new Node<State>(*current);
+            while (frontier.size())
             {
-                frontier.push(children[i]);
-                i++;
+                Node<State> *n = frontier.top();
+                delete n;
+                frontier.pop();
             }
+            while (close.size())
+            {
+                Node<State> *n = close.back();
+                delete n;
+                close.pop_back();
+            }
+            return path;
+        }
+        vector<Node<State> *> children = current->expand(problem);
+        long unsigned int i = 0;
+        while (i < children.size())
+        {
+            frontier.push(children[i]);
+            i++;
         }
     }
-    //No tiene solucion
     return NULL;
 }

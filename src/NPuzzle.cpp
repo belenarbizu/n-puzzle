@@ -65,6 +65,41 @@ int NPuzzleState::_index_of(int x, int y)
     return x + this->n * y;
 }
 
+void NPuzzleState::shuffle(int n)
+{
+    int i = 0;
+    srand(time(NULL));
+    while (i < n)
+    {
+        int random = rand() % 4 + 1;
+        try
+        {
+            switch (random)
+            {
+                case 1:
+                    move_down();
+                    break;
+                case 2:
+                    move_up();
+                    break;
+                case 3:
+                    move_left();
+                    break;
+                case 4:
+                    move_right();
+                    break;
+                default:
+                    break;
+            }
+        }
+        catch (exception& e)
+        {
+            i--;
+        }
+        i++;
+    }
+}
+
 void NPuzzleState::move_up()
 {
     if (this->p_y == 0)

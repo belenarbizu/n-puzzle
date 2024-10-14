@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstring>
+#include <stdlib.h>
+#include <time.h>
 #include "Problem.hpp"
 
 #define DOWN 1
@@ -24,6 +26,7 @@ class NPuzzleState
 
         void _swap(int a, int b);
         int _index_of(int x, int y);
+        void shuffle(int n);
 
         void move_up();
         void move_down();
