@@ -1,6 +1,6 @@
 
 
-FLAGS			=	-g -I./include #-Wall -Werror -Wextra
+FLAGS			=	-g -I./include -Wall -Werror -Wextra
 
 COMPILER 		=	g++
 

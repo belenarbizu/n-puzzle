@@ -69,7 +69,7 @@ vector<Node<State> *> Node<State>::expand(Problem<State> *problem)
     vector<Node<State> *> result;
     vector<int> actions = problem->actions(this->state);
 
-    int i = 0;
+    long unsigned int i = 0;
     while (i < actions.size())
     {
         State *new_state = problem->result(this->state, actions[i]);

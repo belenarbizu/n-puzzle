@@ -6,6 +6,8 @@
 template <typename State>
 bool check_close(vector<Node<State> *> *close, Node<State> *current)
 {
+    (void)close;
+    (void)current;
     return true;
 }
 
@@ -23,7 +25,7 @@ Node<State> *best_first_graph_search(Problem<State> *problem)
         Node<State> *current = frontier.top();
         frontier.pop();
 
-        // Imprimir el estdao por depurar
+        // Imprimir el estado por depurar
         std::cout << endl << "Action: " << current->get_action()
             << ", Cost: " << current->get_cost() << endl;
         current->get_state()->print_map();
@@ -37,7 +39,7 @@ Node<State> *best_first_graph_search(Problem<State> *problem)
         if (check_close(&close, current))
         {
             vector<Node<State> *> children = current->expand(problem);
-            int i = 0;
+            long unsigned int i = 0;
             while (i < children.size())
             {
                 frontier.push(children[i]);

@@ -212,5 +212,8 @@ bool NPuzzleProblem::goal_test(NPuzzleState *state)
 float NPuzzleProblem::path_cost(NPuzzleState *init_state, int action,
     NPuzzleState *final_state)
 {
+    (void)init_state;
+    (void)action;
+    (void)final_state;
     return 1;
 }
