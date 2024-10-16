@@ -16,10 +16,11 @@ class NPuzzleState
         int *map;
         int n;
         int p_x, p_y;
-
+        void fill_map(int init, int n, int m);
     public:
         NPuzzleState();
         NPuzzleState(int n, int *map);
+        NPuzzleState(int n);
         NPuzzleState(NPuzzleState &s);
         ~NPuzzleState();
         bool operator==(const NPuzzleState& puzzle);
@@ -27,6 +28,8 @@ class NPuzzleState
         void _swap(int a, int b);
         int _index_of(int x, int y);
         void shuffle(int n);
+        int get_n();
+        int get(int x, int y);
 
         void move_up();
         void move_down();
@@ -53,6 +56,7 @@ class NPuzzleProblem: public Problem<NPuzzleState>
         vector<int> actions(NPuzzleState *state);
         NPuzzleState *result(NPuzzleState *state, int action);
         NPuzzleState *init_state();
+        NPuzzleState *goal_state();
         bool goal_test(NPuzzleState *state);
         float path_cost(NPuzzleState *init_state, int action,
             NPuzzleState *final_state);

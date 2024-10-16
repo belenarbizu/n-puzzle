@@ -13,17 +13,26 @@ class Node
         Node<State> *parent;
         int action;
         float cost;
+        float h;
     public:
         Node(State *state, Node<State> *parent, int action, float cost);
         Node(Node<State> &node);
         ~Node();
 
+        void set_h(float (*f)(State *start, State *end), State *end);
         State *get_state();
         int get_action();
         float get_cost();
+        float get_h();
         Node<State> *get_parent();
         vector<Node<State> *> expand(Problem<State> *problem);
 };
+
+template <typename State>
+void Node<State>::set_h(float (*f)(State *start, State *end), State *end)
+{
+    this->h = f(this->state, end);
+} 
 
 template <typename State>
 Node<State>::Node(State *state, Node<State> *parent, int action, float cost)
@@ -71,6 +80,12 @@ float Node<State>::get_cost()
 }
 
 template <typename State>
+float Node<State>::get_h()
+{
+    return this->h;
+}
+
+template <typename State>
 Node<State> *Node<State>::get_parent()
 {
     return this->parent;
@@ -105,6 +120,6 @@ class CompareNodes
         bool operator() (Node<State> *a, Node<State> *b)
         {
             //Hay que sumar a->h y b->h
-            return a->get_cost() > b->get_cost();
+            return a->get_cost() + a->get_h() > b->get_cost() + b->get_h();
         }
 };

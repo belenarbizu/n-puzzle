@@ -10,12 +10,14 @@ typedef struct s_stats
 } t_stats;
 
 template <typename State>
-Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats)
+Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, float (*h)(State *s, State *e))
 {
     std::priority_queue<Node<State> *, std::vector<Node<State> *>, CompareNodes<State> > frontier;
     vector<Node<State> *> close;
+    State *end = problem->goal_state();
 
     Node<State> *init = new Node<State>(problem->init_state(), NULL, 0, 0);
+    init->set_h(h, end);
     frontier.push(init);
     while (frontier.size())
     {
@@ -46,6 +48,7 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats)
         long unsigned int i = 0;
         while (i < children.size())
         {
+            children[i]->set_h(h, end);
             frontier.push(children[i]);
             i++;
         }

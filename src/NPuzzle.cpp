@@ -10,8 +10,63 @@ NPuzzleState::NPuzzleState(int n, int *map)
     {
         if (map[i] == 0)
         {
-            this->p_x = i % 3;
-            this->p_y = i / 3;
+            this->p_x = i % n;
+            this->p_y = i / n;
+        }
+        i++;
+    }
+}
+
+int NPuzzleState::get_n()
+{
+    return this->n;
+}
+
+int NPuzzleState::get(int x, int y)
+{
+    return this->map[this->_index_of(x, y)];
+}
+
+void NPuzzleState::fill_map(int init, int n, int m)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        this->map[this->_index_of(i + m, m)] = init + i + 1;
+    }
+    for (int i = 0; i < n - 1; i++)
+    {
+        this->map[this->_index_of(n + m - 1, i + m)] = init + n + i;
+    }
+    for (int i = 0; i < n - 1; i++)
+    {
+        this->map[this->_index_of(n + m - i - 1, n + m - 1)] = init + (n - 1) * 2 + i + 1;
+    }
+    for (int i = 0; i < n - 1; i++)
+    {
+        this->map[this->_index_of(m, n + m - i - 1)] = init + (n - 1) * 3 + i + 1;
+    }
+    if (n > 2)
+    {
+        this->fill_map(init + (n - 1) * 4, n - 2, m + 1);
+    }
+    else if (n > 1)
+    {
+        this->map[this->_index_of(m, m + 1)] = 0;
+    }
+}
+
+NPuzzleState::NPuzzleState(int n)
+{
+    this->n = n;
+    this->map = new int[n * n];
+    this->fill_map(0, n, 0);
+    int i = 0;
+    while (i < n * n)
+    {
+        if (map[i] == 0)
+        {
+            this->p_x = i % n;
+            this->p_y = i / n;
         }
         i++;
     }
@@ -235,6 +290,11 @@ NPuzzleState *NPuzzleProblem::result(NPuzzleState *state, int action)
 NPuzzleState *NPuzzleProblem::init_state()
 {
     return new NPuzzleState(*this->init);
+}
+
+NPuzzleState *NPuzzleProblem::goal_state()
+{
+    return new NPuzzleState(*this->goal);
 }
 
 bool NPuzzleProblem::goal_test(NPuzzleState *state)
