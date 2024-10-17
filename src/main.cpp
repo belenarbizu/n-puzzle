@@ -205,7 +205,8 @@ void error_file(char *filename)
     file.open(filename);
     if (!file.is_open())
     {
-        //Error abriento el archivo
+        cout << "Error. Can't open the file." << endl;
+        exit(EXIT_FAILURE);
     }
     else
     {
