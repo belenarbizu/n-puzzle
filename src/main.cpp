@@ -131,54 +131,72 @@ float hamming_distance(NPuzzleState *s, NPuzzleState *e)
 
 int print_input()
 {
-    char number;
+    std::string input;
+    int number = 0;
+
     cout << "Choose between these heuristic functions:" << endl;
-    cout << "1. " << endl;
-    cout << "2. " << endl;
-    cout << "3. " << endl;
+    cout << "1.Manhattan distance" << endl;
+    cout << "2.Euclidean distance" << endl;
+    cout << "3.Hamming distance" << endl;
     cout << "Write 1, 2 or 3: ";
-    cin >> number;
-    int hfn = int(number);
-    while (hfn < 49 || hfn > 51)
+    cin >> input;
+
+    int read = std::sscanf(input.c_str(), "%d", &number);
+
+    while (!read || (number != 1 && number != 2 && number != 3))
     {
         cout << "Write 1, 2 or 3: ";
-        cin >> number;
-        hfn = int(number);
+        cin >> input;
+
+        read = std::sscanf(input.c_str(), "%d", &number);
     }
-    return hfn;
+
+    return number;
 }
 
 int input_size()
 {
-    char number;
+    std::string input;
+    int number = 0;
+
     cout << "What size do you want your puzzle to be?" << endl;
     cout << "Write a number between 3 and 20: ";
-    cin >> number;
-    int size = number - '0';
-    while (size < 3 || size > 20)
+    cin >> input;
+
+    int read = std::sscanf(input.c_str(), "%d", &number);
+
+    while (!read || number < 3 || number > 20)
     {
         cout << "Write a number between 3 and 20: ";
-        cin >> number;
-        size = number - '0';
+        cin >> input;
+
+        read = std::sscanf(input.c_str(), "%d", &number);
     }
-    return size;
+
+    return number;
 }
 
 int input_shuffle()
 {
-    int number;
+
+    std::string input;
+    int number = 0;
+
     cout << "How many times do you want to shuffle your puzzle?" << endl;
     cout << "Write a number between 1 and 50: ";
-    cin >> number;
-    int shuffle = number ;
-    cout << shuffle << endl;
-    while (shuffle < 1 || shuffle > 50)
+    cin >> input;
+
+    int read = std::sscanf(input.c_str(), "%d", &number);
+
+    while (!read || number < 1 || number > 50)
     {
         cout << "Write a number between 1 and 50: ";
-        cin >> number;
-        shuffle = number - '0';
+        cin >> input;
+
+        read = std::sscanf(input.c_str(), "%d", &number);
     }
-    return shuffle;
+
+    return number;
 }
 
 void error_file(char *filename)
@@ -210,72 +228,60 @@ int main(int argc, char **argv)
         int heuristic = print_input();
         int puzzle_size = input_size();
         int puzzle_shuffle = input_shuffle();
-        switch (heuristic)
-        {
-        case 49:
-            /* hf 1 */
-            break;
-        case 50:
-            /* hf 2 */
-            break;
-        case 51:
-            /* hf 3 */
-            break;
-        default:
-            break;
-        }
 
-        // Create the starting state
-        //int map[9] = {1, 2, 3, 8, 0, 4, 7, 6, 5};
         NPuzzleState puzzle(puzzle_size);
-
-        //int map2[9] = {0, 2, 3, 1, 8, 4, 7, 6, 5};
         NPuzzleState puzzle2(puzzle_size);
 
         puzzle2.shuffle(puzzle_shuffle);
 
         t_stats stats = {0, 0};
-
-        // Create the problem.
         NPuzzleProblem problem(&puzzle2, &puzzle);
-        Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, manhattan_distance);
-        //int moves = print_states(goal);
-        std::cout << "MANHATTAN: " << endl;
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        //std::cout << moves << " moves";
-        while (goal)
+
+        if (heuristic == 1)
         {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
+            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, manhattan_distance);
+            int moves = print_states(goal);
+            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+            std::cout << moves << " moves";
+            while (goal)
+            {
+                Node<NPuzzleState> *parent = goal->get_parent();
+                delete goal;
+                goal = parent;
+            }
+        }
+        else if (heuristic == 2)
+        {
+            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, euclidean_distance);
+            int moves = print_states(goal);
+            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+            std::cout << moves << " moves";
+            while (goal)
+            {
+                Node<NPuzzleState> *parent = goal->get_parent();
+                delete goal;
+                goal = parent;
+            }
+        }
+        else if (heuristic == 3)
+        {
+            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, hamming_distance);
+            int moves = print_states(goal);
+            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+            std::cout << moves << " moves";
+            while (goal)
+            {
+                Node<NPuzzleState> *parent = goal->get_parent();
+                delete goal;
+                goal = parent;
+            }
         }
 
-        stats = {0, 0};
-        goal = best_first_graph_search(&problem, &stats, euclidean_distance);
-        std::cout << "EUCLIDEAN: " << endl;
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        while (goal)
-        {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
-        }
 
-        stats = {0, 0};
-        goal = best_first_graph_search(&problem, &stats, hamming_distance);
-        std::cout << "HAMMING: " << endl;
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        while (goal)
-        {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
-        }
-
-        stats = {0, 0};
+        /*stats = {0, 0};
         goal = best_first_graph_search(&problem, &stats, heuristico_tonto);
         std::cout << "TONTO: " << endl;
         std::cout << "Nodes represented: " << stats.nodes_represented << endl;
@@ -285,7 +291,7 @@ int main(int argc, char **argv)
             Node<NPuzzleState> *parent = goal->get_parent();
             delete goal;
             goal = parent;
-        }
+        }*/
     }
     return 0;
 }
