@@ -29,6 +29,13 @@ int NPuzzleState::get(int x, int y)
 
 void NPuzzleState::fill_map(int init, int n, int m)
 {
+    if (m == 0)
+    {
+        for (int i = 0; i < n*n; i++)
+        {
+            this->map[i] = 0;
+        }
+    }
     for (int i = 0; i < n - 1; i++)
     {
         this->map[this->_index_of(i + m, m)] = init + i + 1;

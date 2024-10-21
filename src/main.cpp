@@ -190,7 +190,6 @@ int input_shuffle()
 
         read = std::sscanf(input.c_str(), "%d", &number);
     }
-
     return number;
 }
 
@@ -321,6 +320,7 @@ NPuzzleState *error_file(char *filename)
     return new NPuzzleState(size, puzzle.data());
 }
 
+
 int main(int argc, char **argv)
 {
     NPuzzleState *start;
@@ -336,10 +336,12 @@ int main(int argc, char **argv)
         int puzzle_size = input_size();
         start = new NPuzzleState(puzzle_size);
         int puzzle_shuffle = input_shuffle();
-        start->shuffle(puzzle_shuffle);
+        start->shuffle(puzzle_shuffle*10);
     }
         int heuristic = print_input();
         goal = new NPuzzleState(start->get_n());
+        start->print_map();
+        goal->print_map();
         t_stats stats = {0, 0};
         problem = new NPuzzleProblem(start, goal);
 
