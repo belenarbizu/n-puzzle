@@ -8,13 +8,14 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/npuzzle",
-            "args": [],
+            "program": "${workspaceFolder}/a.exe",
+            "args": ["prueba.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
+            "miDebuggerPath": "/path/to/gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

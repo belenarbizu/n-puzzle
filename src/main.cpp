@@ -4,6 +4,8 @@
 #include "BFGS.hpp"
 #include <fstream>
 #include <math.h>
+#include <sstream>
+#include <set>
 using namespace std;
 
 
@@ -31,13 +33,6 @@ int print_states(Node<NPuzzleState> *goal)
         return n + 1;
     }
     return -1;
-}
-
-float heuristico_tonto(NPuzzleState *s, NPuzzleState *e)
-{
-    (void) s;
-    (void) e;
-    return 0;
 }
 
 float manhattan_distance(NPuzzleState *s, NPuzzleState *e)
@@ -199,7 +194,113 @@ int input_shuffle()
     return number;
 }
 
-void error_file(char *filename)
+int size_puzzle(ifstream &file)
+{
+    int size = 0;
+    int read = 0;
+    string line;
+    while (getline(file, line)) {
+        if (line[0] == '#')
+            continue;
+        size_t pos = line.find('#');
+        if (pos != string::npos)
+        {
+            line = line.substr(0, pos);
+        }
+        int count = 0;
+        for (size_t i = 0; i < line.length(); i++)
+        {
+            if (line[i] >= '0' && line[i] <= '9')
+            {
+                count = 0;
+            }
+            else if (line[i] != ' ')
+            {
+                count++;
+            }
+        }
+        if (count == 0)
+        {
+            read = sscanf(line.c_str(), "%d", &size);
+        }
+        if (read == 0)
+        {
+            cout << "Error. The file doesn't have the size of the puzzle." << endl;
+            exit(EXIT_FAILURE);
+        }
+        else if (size < 3 || size > 20)
+        {
+            cout << "Error. The size has to be between 3 and 20." << endl;
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            break;
+        }
+    }
+    return size;
+}
+
+vector<int> read_puzzle(ifstream &file)
+{
+    vector<int> puzzle;
+    string line;
+    while (getline(file, line)) {
+        if (line[0] == '#')
+            continue;
+        size_t pos = line.find('#');
+        if (pos != string::npos)
+        {
+            line = line.substr(0, pos);
+        }
+        for (size_t i = 0; i < line.length(); i++)
+        {
+            if (line[i] != ' ' && (line[i] < 48 || line[i] > 57))
+            {
+                cout << "Error. The puzzle has to be only numbers." << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        stringstream ss(line);
+        int number;
+        while (ss >> number) {
+            puzzle.push_back(number);
+        }
+    }
+    if (puzzle.empty())
+    {
+        cout << "Error. The file doesn't have a puzzle." << endl;
+        exit(EXIT_FAILURE);
+    }
+    return puzzle;
+}
+
+void error_puzzle(vector<int> puzzle, int size)
+{
+    set<int> unique_num;
+    int max_num = size * size - 1;
+    unsigned int puzzle_size = size * size;
+    for (size_t i = 0; i < puzzle.size(); i++)
+    {
+        if (puzzle[i] < 0 || puzzle[i] > max_num)
+        {
+            cout << "Error. Wrong numbers" << endl;
+            exit(EXIT_FAILURE);            
+        }
+        if (!(unique_num.insert(puzzle[i]).second))
+        {
+            cout << "Error. Duplicated numbers" << endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    if (puzzle.size() != puzzle_size)
+    {
+        cout << "Error. The size of the puzzle is wrong" << endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+NPuzzleState *error_file(char *filename)
 {
     ifstream file;
     file.open(filename);
@@ -208,39 +309,43 @@ void error_file(char *filename)
         cout << "Error. Can't open the file." << endl;
         exit(EXIT_FAILURE);
     }
-    else
+    else if (file.peek() == EOF)
     {
-        string line;
-        while (getline(file, line)) {
-            cout << line << endl;
-        }
-        file.close();
+        cout << "Error. The file is empty" << endl;
+        exit(EXIT_FAILURE);
     }
+    int size = size_puzzle(file);
+    vector<int> puzzle = read_puzzle(file);
+    error_puzzle(puzzle, size);
+    file.close();
+    return new NPuzzleState(size, puzzle.data());
 }
 
 int main(int argc, char **argv)
 {
+    NPuzzleState *start;
+    NPuzzleState *goal;
+    NPuzzleProblem *problem;
+
     if (argc == 2)
     {
-        error_file(argv[1]);
+        start = error_file(argv[1]);
     }
     else
     {
-        int heuristic = print_input();
         int puzzle_size = input_size();
+        start = new NPuzzleState(puzzle_size);
         int puzzle_shuffle = input_shuffle();
-
-        NPuzzleState puzzle(puzzle_size);
-        NPuzzleState puzzle2(puzzle_size);
-
-        puzzle2.shuffle(puzzle_shuffle);
-
+        start->shuffle(puzzle_shuffle);
+    }
+        int heuristic = print_input();
+        goal = new NPuzzleState(start->get_n());
         t_stats stats = {0, 0};
-        NPuzzleProblem problem(&puzzle2, &puzzle);
+        problem = new NPuzzleProblem(start, goal);
 
         if (heuristic == 1)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, manhattan_distance);
+            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, manhattan_distance);
             int moves = print_states(goal);
             std::cout << "Nodes represented: " << stats.nodes_represented << endl;
             std::cout << "Nodes selected: " << stats.nodes_selected << endl;
@@ -254,7 +359,7 @@ int main(int argc, char **argv)
         }
         else if (heuristic == 2)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, euclidean_distance);
+            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, euclidean_distance);
             int moves = print_states(goal);
             std::cout << "Nodes represented: " << stats.nodes_represented << endl;
             std::cout << "Nodes selected: " << stats.nodes_selected << endl;
@@ -268,7 +373,7 @@ int main(int argc, char **argv)
         }
         else if (heuristic == 3)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(&problem, &stats, hamming_distance);
+            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, hamming_distance);
             int moves = print_states(goal);
             std::cout << "Nodes represented: " << stats.nodes_represented << endl;
             std::cout << "Nodes selected: " << stats.nodes_selected << endl;
@@ -280,19 +385,5 @@ int main(int argc, char **argv)
                 goal = parent;
             }
         }
-
-
-        /*stats = {0, 0};
-        goal = best_first_graph_search(&problem, &stats, heuristico_tonto);
-        std::cout << "TONTO: " << endl;
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        while (goal)
-        {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
-        }*/
-    }
     return 0;
 }
