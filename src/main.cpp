@@ -336,7 +336,7 @@ int main(int argc, char **argv)
         int puzzle_size = input_size();
         start = new NPuzzleState(puzzle_size);
         int puzzle_shuffle = input_shuffle();
-        start->shuffle(puzzle_shuffle*10);
+        start->shuffle(puzzle_shuffle);
     }
         int heuristic = print_input();
         goal = new NPuzzleState(start->get_n());
