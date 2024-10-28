@@ -2,6 +2,7 @@
 
 #include "Node.hpp"
 #include <queue>
+#include <set>
 
 typedef struct s_stats
 {
@@ -13,8 +14,9 @@ template <typename State>
 Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, float (*h)(State *s, State *e))
 {
     std::priority_queue<Node<State> *, std::vector<Node<State> *>, CompareNodes<State> > frontier;
-    vector<Node<State> *> close;
+    std::set<Node<State> *, EqualNodes<State> > close;
     State *end = problem->goal_state();
+    typename std::set<Node<State> *>::iterator it;
 
     Node<State> *init = new Node<State>(problem->init_state(), NULL, 0, 0);
     init->set_h(h, end);
@@ -24,7 +26,20 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
         Node<State> *current = frontier.top();
         stats->nodes_selected += 1;
         frontier.pop();
-        close.push_back(current);
+        close.insert(current);
+
+        it = close.find(current);
+        if (it != close.end() && (*it)->get_cost() > current->get_cost())
+        {
+            delete *it;
+            close.erase(it);
+            close.insert(current);
+        }
+        if (it != close.end() && (*it)->get_cost() <= current->get_cost())
+        {
+            delete current;
+            continue;
+        }
 
         if (problem->goal_test(current->get_state()))
         {
@@ -36,20 +51,24 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 delete n;
                 frontier.pop();
             }
-            while (close.size())
+            /*while (close.size())
             {
                 Node<State> *n = close.back();
                 delete n;
                 close.pop_back();
-            }
+            }*/
             return path;
         }
         vector<Node<State> *> children = current->expand(problem);
         long unsigned int i = 0;
         while (i < children.size())
         {
-            children[i]->set_h(h, end);
-            frontier.push(children[i]);
+            it = close.find(children[i]);
+            if ((it != close.end() && (*it)->get_cost() > children[i]->get_cost()) || it == close.end())
+            {
+                children[i]->set_h(h, end);
+                frontier.push(children[i]);
+            }
             i++;
         }
     }

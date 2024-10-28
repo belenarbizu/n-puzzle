@@ -123,3 +123,14 @@ class CompareNodes
             return a->get_cost() + a->get_h() > b->get_cost() + b->get_h();
         }
 };
+
+template <typename State>
+class EqualNodes
+{
+    public:
+        bool operator() (Node<State> *a, Node<State> *b) const
+        {
+            //Hay que sumar a->h y b->h
+            return !(*(a->get_state()) == *(b->get_state()));
+        }
+};

@@ -36,6 +36,8 @@ class NPuzzleState
         void move_left();
         void move_right();
 
+        bool is_solvable(NPuzzleState *end);
+
         bool can_move_up();
         bool can_move_down();
         bool can_move_left();

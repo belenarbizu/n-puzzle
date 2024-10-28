@@ -247,6 +247,63 @@ void NPuzzleState::print_map()
     } 
 }
 
+bool NPuzzleState::is_solvable(NPuzzleState *end)
+{
+    end = new NPuzzleState(*end);
+    while (end->can_move_down())
+        end->move_down();
+    while (end->can_move_right())
+        end->move_right();
+
+    this->print_map();
+    std::cout << std::endl;
+
+    end->print_map();
+    std::cout << std::endl;
+
+    int mapping[this->n * this->n];
+    for (int i = 0; i < this->n * this->n; i++)
+        mapping[end->map[i]] = i;
+
+    for (int i = 0; i < this->n * this->n; i++)
+        std::cout << mapping[i] << " ";
+
+    std::cout << std::endl;
+
+    int inversions = 0;
+    for (int i = 0; i < this->n * this->n; i++)
+    {
+        for (int j = i; j < this->n * this->n; j++)
+        {
+            if (mapping[this->map[i]] > mapping[this->map[j]]
+                && this->map[i] != 0)
+                inversions ++;
+        }
+    }
+
+    std::cout << "Inversions: " << inversions << std::endl;
+
+    if (inversions % 2 == 0)
+        std::cout << "Par";
+    else
+        std::cout << "Impar";
+    std::cout << std::endl;
+
+    int row = this->n - this->p_y - 1;
+
+    if (this->n % 2 && inversions % 2 == 0)
+        return true;
+    if (this->n % 2 == 0)
+    {
+        if (inversions % 2 == 1 && row % 2 == 0)
+            return true;
+        if (inversions % 2 == 0 && row % 2 == 1)
+            return true;
+    }
+    delete end;
+    return false;
+}
+
 NPuzzleProblem::NPuzzleProblem(NPuzzleState *init_state,
     NPuzzleState *final_state)
 {

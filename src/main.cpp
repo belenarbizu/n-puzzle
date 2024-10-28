@@ -320,6 +320,16 @@ NPuzzleState *error_file(char *filename)
     return new NPuzzleState(size, puzzle.data());
 }
 
+int main_()
+{
+    int n = 3;
+    int c[n * n] = {1,2,3,6,0,4,8,7,5};
+    NPuzzleState e(n, c);
+    e.shuffle(10000);
+    NPuzzleState end(n);
+    std::cout << e.is_solvable(&end);
+    return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -338,10 +348,15 @@ int main(int argc, char **argv)
         int puzzle_shuffle = input_shuffle();
         start->shuffle(puzzle_shuffle);
     }
-        int heuristic = print_input();
         goal = new NPuzzleState(start->get_n());
-        start->print_map();
-        goal->print_map();
+    if (!start->is_solvable(goal)){
+        std::cout << "Not solvable\n";}
+    else{
+        std::cout << "Solvable\n";}
+
+        int heuristic = print_input();
+        //start->print_map();
+        //goal->print_map();
         t_stats stats = {0, 0};
         problem = new NPuzzleProblem(start, goal);
 
