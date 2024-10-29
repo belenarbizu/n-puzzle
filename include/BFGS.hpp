@@ -26,21 +26,23 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
         Node<State> *current = frontier.top();
         stats->nodes_selected += 1;
         frontier.pop();
-        close.insert(current);
+        //close.insert(current);
 
         it = close.find(current);
-        if (it != close.end() && (*it)->get_cost() > current->get_cost())
+        if (it != close.end())
         {
-            delete *it;
-            close.erase(it);
-            close.insert(current);
+            if ((*it)->get_cost() > current->get_cost())
+            {
+                delete *it;
+                close.erase(it);
+                close.insert(current);
+            }
+            else
+            {
+                delete current;
+                continue;
+            }
         }
-        if (it != close.end() && (*it)->get_cost() <= current->get_cost())
-        {
-            delete current;
-            continue;
-        }
-
         if (problem->goal_test(current->get_state()))
         {
             stats->nodes_represented = frontier.size() + close.size();
