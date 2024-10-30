@@ -18,7 +18,9 @@ class Node
         Node(State *state, Node<State> *parent, int action, float cost);
         Node(Node<State> &node);
         ~Node();
-
+        void set_parent(Node<State> *parent);
+        void set_action(int action);
+        void set_cost(int cost);
         void set_h(float (*f)(State *start, State *end), State *end);
         State *get_state();
         int get_action();
@@ -27,6 +29,26 @@ class Node
         Node<State> *get_parent();
         vector<Node<State> *> expand(Problem<State> *problem);
 };
+
+
+
+template <typename State>
+void Node<State>::set_parent(Node<State> *parent)
+{
+    this->parent = parent;
+}
+
+template <typename State>
+void Node<State>::set_action(int action)
+{
+    this->action = action;
+}
+
+template <typename State>
+void Node<State>::set_cost(int cost)
+{
+    this->cost = cost;
+}
 
 template <typename State>
 void Node<State>::set_h(float (*f)(State *start, State *end), State *end)
@@ -114,13 +136,32 @@ vector<Node<State> *> Node<State>::expand(Problem<State> *problem)
 }
 
 template <typename State>
-class CompareNodes
+class AStarComparator
 {
     public:
         bool operator() (Node<State> *a, Node<State> *b)
         {
-            //Hay que sumar a->h y b->h
             return a->get_cost() + a->get_h() > b->get_cost() + b->get_h();
+        }
+};
+
+template <typename State>
+class GreedyComparator
+{
+    public:
+        bool operator() (Node<State> *a, Node<State> *b)
+        {
+            return a->get_h() > b->get_h();
+        }
+};
+
+template <typename State>
+class UniformCostComparator
+{
+    public:
+        bool operator() (Node<State> *a, Node<State> *b)
+        {
+            return a->get_cost() > b->get_cost();
         }
 };
 
@@ -130,7 +171,6 @@ class EqualNodes
     public:
         bool operator() (Node<State> *a, Node<State> *b) const
         {
-            //Hay que sumar a->h y b->h
             return !(*(a->get_state()) == *(b->get_state()));
         }
 };

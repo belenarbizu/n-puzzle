@@ -124,6 +124,31 @@ float hamming_distance(NPuzzleState *s, NPuzzleState *e)
     return distance;
 }
 
+int print_algorithm()
+{
+    std::string input;
+    int number = 0;
+
+    cout << "Choose between these algorithms:" << endl;
+    cout << "1.A*" << endl;
+    cout << "2.Greedy" << endl;
+    cout << "3.Uniform-cost" << endl;
+    cout << "Write 1, 2 or 3: ";
+    cin >> input;
+
+    int read = std::sscanf(input.c_str(), "%d", &number);
+
+    while (!read || (number != 1 && number != 2 && number != 3))
+    {
+        cout << "Write 1, 2 or 3: ";
+        cin >> input;
+
+        read = std::sscanf(input.c_str(), "%d", &number);
+    }
+
+    return number;
+}
+
 int print_input()
 {
     std::string input;
@@ -358,52 +383,60 @@ int main(int argc, char **argv)
         std::cout << "The puzzle is not solvable\n";
         return 1;
     }
-    
+
+    int algorithm = print_algorithm();
     int heuristic = print_input();
     t_stats stats = {0, 0};
     problem = new NPuzzleProblem(start, goal);
 
-    if (heuristic == 1)
+    Node<NPuzzleState> *goal_node;
+
+    if (algorithm == A_STAR)
     {
-        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, manhattan_distance);
-        int moves = print_states(goal);
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        std::cout << moves << " moves";
-        while (goal)
+        if (heuristic == 1)
         {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
+            goal_node = best_first_graph_search<AStarComparator<NPuzzleState>, NPuzzleState>(problem, &stats, manhattan_distance);
+        }
+        else if (heuristic == 2)
+        {
+            goal_node = best_first_graph_search<AStarComparator<NPuzzleState>, NPuzzleState>(problem, &stats, euclidean_distance);
+        }
+        else if (heuristic == 3)
+        {
+            goal_node = best_first_graph_search<AStarComparator<NPuzzleState>, NPuzzleState>(problem, &stats, hamming_distance);
         }
     }
-    else if (heuristic == 2)
+    else if (algorithm == GREEDY)
     {
-        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, euclidean_distance);
-        int moves = print_states(goal);
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        std::cout << moves << " moves";
-        while (goal)
+        if (heuristic == 1)
         {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
+            goal_node = best_first_graph_search<GreedyComparator<NPuzzleState>, NPuzzleState>(problem, &stats, manhattan_distance);
+        }
+        else if (heuristic == 2)
+        {
+            goal_node = best_first_graph_search<GreedyComparator<NPuzzleState>, NPuzzleState>(problem, &stats, euclidean_distance);
+        }
+        else if (heuristic == 3)
+        {
+            goal_node = best_first_graph_search<GreedyComparator<NPuzzleState>, NPuzzleState>(problem, &stats, hamming_distance);
         }
     }
-    else if (heuristic == 3)
+    else if (algorithm == UNIFORM_COST)
     {
-        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, hamming_distance);
-        int moves = print_states(goal);
-        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-        std::cout << moves << " moves";
-        while (goal)
-        {
-            Node<NPuzzleState> *parent = goal->get_parent();
-            delete goal;
-            goal = parent;
-        }
+        goal_node = best_first_graph_search<UniformCostComparator<NPuzzleState>, NPuzzleState>(problem, &stats, manhattan_distance);
     }
+    int moves = print_states(goal_node);
+    std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+    std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+    std::cout << moves << " moves";
+    while (goal_node)
+    {
+        Node<NPuzzleState> *parent = goal_node->get_parent();
+        delete goal_node;
+        goal_node = parent;
+    }
+    delete problem;
+    delete start;
+    delete goal;
     return 0;
 }

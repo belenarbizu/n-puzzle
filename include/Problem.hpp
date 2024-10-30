@@ -9,7 +9,7 @@ class Problem
 {
     public:
         Problem();
-        ~Problem();
+        virtual ~Problem();
 
         virtual vector<int> actions(State *state) = 0;
         virtual State *result(State *state, int action) = 0;
@@ -22,6 +22,3 @@ class Problem
 
 template <typename State>
 Problem<State>::Problem() {}
-
-template <typename State>
-Problem<State>::~Problem() {}

@@ -4,16 +4,20 @@
 #include <queue>
 #include <set>
 
+#define A_STAR 1
+#define GREEDY 2
+#define UNIFORM_COST 3
+
 typedef struct s_stats
 {
     int nodes_selected;
     int nodes_represented;
 } t_stats;
 
-template <typename State>
+template <typename Comparator, typename State>
 Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, float (*h)(State *s, State *e))
 {
-    std::priority_queue<Node<State> *, std::vector<Node<State> *>, CompareNodes<State> > frontier;
+    std::priority_queue<Node<State> *, std::vector<Node<State> *>, Comparator > frontier;
     std::set<Node<State> *, EqualNodes<State> > close;
     State *end = problem->goal_state();
     typename std::set<Node<State> *>::iterator it;
@@ -26,16 +30,20 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
         Node<State> *current = frontier.top();
         stats->nodes_selected += 1;
         frontier.pop();
-        //close.insert(current);
 
         it = close.find(current);
         if (it != close.end())
         {
             if ((*it)->get_cost() > current->get_cost())
             {
-                delete *it;
-                close.erase(it);
-                close.insert(current);
+                //delete *it;
+                (*it)->set_parent(current->get_parent());
+                (*it)->set_action(current->get_action());
+                (*it)->set_cost(current->get_cost());
+                //close.erase(it);
+                //close.insert(current);
+                delete current;
+                current = *it;
             }
             else
             {
@@ -58,6 +66,7 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 delete *close.begin();
                 close.erase(close.begin());
             }
+            delete end;
             return path;
         }
         vector<Node<State> *> children = current->expand(problem);
@@ -70,8 +79,14 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 children[i]->set_h(h, end);
                 frontier.push(children[i]);
             }
+            else
+            {
+                delete children[i];
+            }
             i++;
         }
+        children.clear();
     }
+    delete end;
     return NULL;
 }

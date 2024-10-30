@@ -291,6 +291,7 @@ bool NPuzzleState::is_solvable(NPuzzleState *end)
 
     int row = this->n - this->p_y - 1;
 
+    delete end;
     if (this->n % 2 && inversions % 2 == 0)
         return true;
     if (this->n % 2 == 0)
@@ -300,7 +301,6 @@ bool NPuzzleState::is_solvable(NPuzzleState *end)
         if (inversions % 2 == 0 && row % 2 == 1)
             return true;
     }
-    delete end;
     return false;
 }
 
