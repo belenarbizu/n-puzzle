@@ -348,59 +348,62 @@ int main(int argc, char **argv)
         int puzzle_shuffle = input_shuffle();
         start->shuffle(puzzle_shuffle);
     }
-        goal = new NPuzzleState(start->get_n());
-    if (!start->is_solvable(goal)){
-        std::cout << "Not solvable\n";}
-    else{
-        std::cout << "Solvable\n";}
 
-        int heuristic = print_input();
-        //start->print_map();
-        //goal->print_map();
-        t_stats stats = {0, 0};
-        problem = new NPuzzleProblem(start, goal);
+    goal = new NPuzzleState(start->get_n());
 
-        if (heuristic == 1)
+    if (!start->is_solvable(goal))
+    {
+        delete start;
+        delete goal;
+        std::cout << "The puzzle is not solvable\n";
+        return 1;
+    }
+    
+    int heuristic = print_input();
+    t_stats stats = {0, 0};
+    problem = new NPuzzleProblem(start, goal);
+
+    if (heuristic == 1)
+    {
+        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, manhattan_distance);
+        int moves = print_states(goal);
+        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+        std::cout << moves << " moves";
+        while (goal)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, manhattan_distance);
-            int moves = print_states(goal);
-            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-            std::cout << moves << " moves";
-            while (goal)
-            {
-                Node<NPuzzleState> *parent = goal->get_parent();
-                delete goal;
-                goal = parent;
-            }
+            Node<NPuzzleState> *parent = goal->get_parent();
+            delete goal;
+            goal = parent;
         }
-        else if (heuristic == 2)
+    }
+    else if (heuristic == 2)
+    {
+        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, euclidean_distance);
+        int moves = print_states(goal);
+        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+        std::cout << moves << " moves";
+        while (goal)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, euclidean_distance);
-            int moves = print_states(goal);
-            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-            std::cout << moves << " moves";
-            while (goal)
-            {
-                Node<NPuzzleState> *parent = goal->get_parent();
-                delete goal;
-                goal = parent;
-            }
+            Node<NPuzzleState> *parent = goal->get_parent();
+            delete goal;
+            goal = parent;
         }
-        else if (heuristic == 3)
+    }
+    else if (heuristic == 3)
+    {
+        Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, hamming_distance);
+        int moves = print_states(goal);
+        std::cout << "Nodes represented: " << stats.nodes_represented << endl;
+        std::cout << "Nodes selected: " << stats.nodes_selected << endl;
+        std::cout << moves << " moves";
+        while (goal)
         {
-            Node<NPuzzleState> *goal = best_first_graph_search(problem, &stats, hamming_distance);
-            int moves = print_states(goal);
-            std::cout << "Nodes represented: " << stats.nodes_represented << endl;
-            std::cout << "Nodes selected: " << stats.nodes_selected << endl;
-            std::cout << moves << " moves";
-            while (goal)
-            {
-                Node<NPuzzleState> *parent = goal->get_parent();
-                delete goal;
-                goal = parent;
-            }
+            Node<NPuzzleState> *parent = goal->get_parent();
+            delete goal;
+            goal = parent;
         }
+    }
     return 0;
 }
