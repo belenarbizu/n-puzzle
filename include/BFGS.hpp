@@ -53,12 +53,11 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 delete n;
                 frontier.pop();
             }
-            /*while (close.size())
+            while (close.size())
             {
-                Node<State> *n = close.back();
-                delete n;
-                close.pop_back();
-            }*/
+                delete *close.begin();
+                close.erase(close.begin());
+            }
             return path;
         }
         vector<Node<State> *> children = current->expand(problem);
