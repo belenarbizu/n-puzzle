@@ -255,20 +255,9 @@ bool NPuzzleState::is_solvable(NPuzzleState *end)
     while (end->can_move_right())
         end->move_right();
 
-    this->print_map();
-    std::cout << std::endl;
-
-    end->print_map();
-    std::cout << std::endl;
-
     int mapping[this->n * this->n];
     for (int i = 0; i < this->n * this->n; i++)
         mapping[end->map[i]] = i;
-
-    for (int i = 0; i < this->n * this->n; i++)
-        std::cout << mapping[i] << " ";
-
-    std::cout << std::endl;
 
     int inversions = 0;
     for (int i = 0; i < this->n * this->n; i++)
@@ -281,15 +270,7 @@ bool NPuzzleState::is_solvable(NPuzzleState *end)
         }
     }
 
-    std::cout << "Inversions: " << inversions << std::endl;
-
-    if (inversions % 2 == 0)
-        std::cout << "Par";
-    else
-        std::cout << "Impar";
-    std::cout << std::endl;
-
-    int row = this->n - this->p_y - 1;
+    int row = this->n - this->p_y;
 
     delete end;
     if (this->n % 2 && inversions % 2 == 0)

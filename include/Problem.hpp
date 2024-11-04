@@ -9,7 +9,7 @@ class Problem
 {
     public:
         Problem();
-        virtual ~Problem();
+        virtual ~Problem() {};
 
         virtual vector<int> actions(State *state) = 0;
         virtual State *result(State *state, int action) = 0;

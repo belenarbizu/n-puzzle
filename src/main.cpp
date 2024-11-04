@@ -345,17 +345,6 @@ NPuzzleState *error_file(char *filename)
     return new NPuzzleState(size, puzzle.data());
 }
 
-int main_()
-{
-    int n = 3;
-    int c[n * n] = {1,2,3,6,0,4,8,7,5};
-    NPuzzleState e(n, c);
-    e.shuffle(10000);
-    NPuzzleState end(n);
-    std::cout << e.is_solvable(&end);
-    return 0;
-}
-
 int main(int argc, char **argv)
 {
     NPuzzleState *start;

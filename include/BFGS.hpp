@@ -36,12 +36,9 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
         {
             if ((*it)->get_cost() > current->get_cost())
             {
-                //delete *it;
                 (*it)->set_parent(current->get_parent());
                 (*it)->set_action(current->get_action());
                 (*it)->set_cost(current->get_cost());
-                //close.erase(it);
-                //close.insert(current);
                 delete current;
                 current = *it;
             }
@@ -51,6 +48,11 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 continue;
             }
         }
+        else
+        {
+            close.insert(current);
+        }
+
         if (problem->goal_test(current->get_state()))
         {
             stats->nodes_represented = frontier.size() + close.size();
@@ -61,9 +63,10 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 delete n;
                 frontier.pop();
             }
+            std::cout << "Size: " << close.size() << endl;
             while (close.size())
             {
-                delete *close.begin();
+                delete *(close.begin());
                 close.erase(close.begin());
             }
             delete end;
