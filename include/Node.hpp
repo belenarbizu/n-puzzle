@@ -81,6 +81,7 @@ template <typename State>
 Node<State>::~Node()
 {
     delete this->state;
+    
 }
 
 template <typename State>

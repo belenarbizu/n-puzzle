@@ -50,7 +50,11 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
         }
         else
         {
-            close.insert(current);
+            if (close.insert(current).second == false)
+            {
+                delete current;
+                continue;
+            }
         }
 
         if (problem->goal_test(current->get_state()))
@@ -63,7 +67,6 @@ Node<State> *best_first_graph_search(Problem<State> *problem, t_stats *stats, fl
                 delete n;
                 frontier.pop();
             }
-            std::cout << "Size: " << close.size() << endl;
             while (close.size())
             {
                 delete *(close.begin());
